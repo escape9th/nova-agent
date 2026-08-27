@@ -1,0 +1,47 @@
+"""Agent interface and shared result/event types."""
+
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from typing import Any, Iterator
+
+
+@dataclass
+class AgentEvent:
+    """One observable step of an agent run.
+
+    ``type`` is one of: ``tool_call``, ``tool_result``, ``answer``, ``error``.
+    """
+
+    type: str
+    content: str = ""
+    data: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class AgentResult:
+    """The final outcome of a run: the answer plus a replayable event trace."""
+
+    answer: str
+    events: list[AgentEvent] = field(default_factory=list)
+    iterations: int = 0
+    tool_calls: int = 0
+
+
+class BaseAgent(ABC):
+    """Minimal contract every agent implements."""
+
+    name: str = "agent"
+
+    @abstractmethod
+    def run(self, task: str) -> AgentResult:
+        """Execute a task and return the final answer with an event trace."""
+
+    def run_stream(self, task: str) -> Iterator[AgentEvent]:
+        """Yield events live as the agent works.
+
+        The default implementation runs to completion and replays the trace;
+        agents that can emit events incrementally should override this.
+        """
+        yield from self.run(task).events
