@@ -11,7 +11,9 @@ from typing import Any, Iterator
 class AgentEvent:
     """One observable step of an agent run.
 
-    ``type`` is one of: ``tool_call``, ``tool_result``, ``answer``, ``error``.
+    Common ``type`` values: ``tool_call``, ``tool_result``, ``answer``,
+    ``error``. Higher-level agents may emit additional types (``plan``,
+    ``step``) — consumers should treat unknown types as informational.
     """
 
     type: str
