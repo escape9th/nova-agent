@@ -62,9 +62,14 @@ class ReActAgent(BaseAgent):
     def run_stream(self, task: str) -> Iterator[AgentEvent]:
         memory = self.memory or ConversationBufferMemory()
 
+        # Persist the user turn into memory *before* building the prompt, so
+        # multi-turn chat remembers what was asked earlier — not just the
+        # assistant's previous answers.
+        user_message = Message.user(task)
+        memory.add(user_message)
+
         messages: list[Message] = [Message.system(self.system_prompt)]
         messages.extend(memory.messages())
-        messages.append(Message.user(task))
 
         for i in range(self.max_iterations):
             response = self.llm.chat(
