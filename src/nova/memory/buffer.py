@@ -59,14 +59,17 @@ class ConversationBufferMemory:
         if len(self._messages) <= self.max_messages:
             return
 
-        start = len(self._messages) - self.max_messages
-        # If the window would begin inside a run of tool results, walk back to
-        # the assistant message that issued those tool calls, so the results
-        # stay resolvable. The kept window may end up slightly larger than
-        # max_messages — correctness over strictness.
-        while start > 0 and self._messages[start].role == "tool":
-            start -= 1
-        if self._messages and self._messages[0].role == "system":
-            start = max(start, 1)
+        # The leading system message (if any) lives outside the sliding window.
+        anchor = 1 if self._messages[0].role == "system" else 0
+        keep = self.max_messages - anchor
+        start = len(self._messages) - keep
 
-        self._messages = self._messages[start:]
+        # Never start the window on a tool result: it must stay attached to the
+        # assistant message whose tool_calls requested it. Walk back to that
+        # call. The kept window may end up slightly larger than max_messages —
+        # correctness over strictness.
+        while start > anchor and self._messages[start].role == "tool":
+            start -= 1
+        start = max(start, anchor)
+
+        self._messages = self._messages[:anchor] + self._messages[start:]
