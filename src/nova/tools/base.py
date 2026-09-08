@@ -10,7 +10,7 @@ from __future__ import annotations
 import inspect
 import types as pytypes
 from dataclasses import dataclass
-from typing import Any, Callable, Union, get_args, get_origin
+from typing import Any, Callable, Union, get_args, get_origin, get_type_hints
 
 
 @dataclass
@@ -20,8 +20,8 @@ class Tool:
     parameters: dict[str, Any]  # JSON Schema for the arguments object
     func: Callable[..., Any]
 
-    def __call__(self, **kwargs: Any) -> Any:
-        return self.func(**kwargs)
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return self.func(*args, **kwargs)
 
     def to_openai_spec(self) -> dict[str, Any]:
         """Return this tool as an OpenAI-style tool specification."""
@@ -68,6 +68,14 @@ def _annotation_to_schema(annotation: Any) -> dict[str, Any]:
 
 def _make_tool(func: Callable[..., Any], name: str | None, description: str | None) -> Tool:
     sig = inspect.signature(func)
+    # get_type_hints resolves PEP 563 string annotations ("from __future__ import
+    # annotations") and forward references into real types. Fall back to the raw
+    # annotation when resolution fails.
+    try:
+        type_hints = get_type_hints(func)
+    except Exception:  # noqa: BLE001 - unresolved forward refs are non-fatal here
+        type_hints = {}
+
     doc = (func.__doc__ or "").strip()
     desc = description or (doc.splitlines()[0] if doc else name or func.__name__)
 
@@ -76,7 +84,7 @@ def _make_tool(func: Callable[..., Any], name: str | None, description: str | No
     for pname, param in sig.parameters.items():
         if pname in ("self", "cls"):
             continue
-        properties[pname] = _annotation_to_schema(param.annotation)
+        properties[pname] = _annotation_to_schema(type_hints.get(pname, param.annotation))
         if param.default is inspect.Parameter.empty:
             required.append(pname)
 
