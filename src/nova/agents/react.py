@@ -60,7 +60,10 @@ class ReActAgent(BaseAgent):
         )
 
     def run_stream(self, task: str) -> Iterator[AgentEvent]:
-        memory = self.memory or ConversationBufferMemory()
+        # Note: use `is not None`, not `or` — an empty ConversationBufferMemory
+        # is falsy (it defines __len__), which would silently create a fresh
+        # throwaway buffer every call and break multi-turn memory.
+        memory = self.memory if self.memory is not None else ConversationBufferMemory()
 
         # Persist the user turn into memory *before* building the prompt, so
         # multi-turn chat remembers what was asked earlier — not just the
