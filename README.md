@@ -4,6 +4,8 @@
 
 A minimal, readable, **from-scratch AI agent framework**.
 
+> **Keywords:** AI Agent · 智能体 · LLM · 大模型 · Tool Calling · Function Calling · RAG · Multi-Agent · 多智能体 · ReAct · 向量检索 · Memory · 记忆 · Planning · 规划 · Python · Qwen 通义千问 · DeepSeek · Ollama
+
 Nova implements the core mechanisms behind modern AI agents — the reasoning
 loop, tool calling, memory, planning and multi-agent orchestration — directly
 on top of the OpenAI-compatible protocol, with no heavyweight framework

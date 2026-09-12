@@ -10,7 +10,13 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "escape9th" }]
-keywords = ["ai", "agent", "llm", "react", "tool-calling", "rag", "multi-agent", "planning"]
+keywords = [
+    "ai", "agent", "llm", "react", "tool-calling", "function-calling",
+    "rag", "multi-agent", "planning", "memory", "retrieval", "streaming",
+    "openai", "qwen", "deepseek", "ollama", "openai-compatible",
+    "智能体", "AI Agent", "大模型", "大语言模型", "工具调用", "多智能体",
+    "检索增强生成", "向量检索", "记忆", "提示词", "RAG", "ReAct", "通义千问",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

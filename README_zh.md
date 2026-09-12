@@ -6,6 +6,8 @@
 
 Nova 直接在 OpenAI 兼容协议之上，实现了现代 AI Agent 的核心机制——推理循环、工具调用、记忆、规划与多 Agent 协作——**不依赖任何重量级框架**。整个核心只有几百行纯 Python，每一部分都写得让你能读懂、能改、能讲清楚。
 
+> **关键词：** AI Agent · 智能体 · 大模型 · 大语言模型 · LLM · 工具调用 · Function Calling · RAG · 检索增强生成 · 多智能体 · Multi-Agent · ReAct · 向量检索 · 记忆 · 规划 · 提示词 · Python · 通义千问 · Qwen · DeepSeek · Ollama
+
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
