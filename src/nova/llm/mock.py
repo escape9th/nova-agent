@@ -22,9 +22,14 @@ class MockLLM(BaseLLM):
         tools: Sequence[dict] | None = None,
         temperature: float = 0.0,
         stop: Sequence[str] | None = None,
+        response_format: dict | None = None,
     ) -> ChatResponse:
         self.calls.append(
-            {"messages": list(messages), "tools": list(tools) if tools else None}
+            {
+                "messages": list(messages),
+                "tools": list(tools) if tools else None,
+                "response_format": response_format,
+            }
         )
         if self.responses:
             return self.responses.pop(0)
