@@ -77,6 +77,12 @@ class OpenAICompatLLM(BaseLLM):
                 **client_kwargs,
             )
         self.client = client
+        # Keep the resolved settings so the async client can be built lazily.
+        self._api_key = api_key
+        self._base_url = base_url
+        self._timeout = timeout
+        self._client_kwargs = client_kwargs
+        self._async_client: Any = None
 
     def _request_kwargs(
         self,
@@ -105,6 +111,37 @@ class OpenAICompatLLM(BaseLLM):
         stop: Sequence[str] | None = None,
     ) -> ChatResponse:
         completion = self.client.chat.completions.create(
+            **self._request_kwargs(messages, tools, temperature, stop)
+        )
+        response = from_openai_choice(completion.choices[0])
+        if completion.usage is not None:
+            response.usage = completion.usage.model_dump()
+        response.raw = completion
+        return response
+
+    def _get_async_client(self) -> Any:
+        if self._async_client is None:
+            from openai import AsyncOpenAI
+
+            self._async_client = AsyncOpenAI(
+                api_key=self._api_key,
+                base_url=self._base_url,
+                timeout=self._timeout,
+                **self._client_kwargs,
+            )
+        return self._async_client
+
+    async def achat(
+        self,
+        messages: Sequence[Message],
+        tools: Sequence[dict] | None = None,
+        temperature: float = 0.0,
+        stop: Sequence[str] | None = None,
+    ) -> ChatResponse:
+        """Truly async completion via the AsyncOpenAI client."""
+        if self._api_key is None:  # custom client without key — fall back to sync
+            return await super().achat(messages, tools=tools, temperature=temperature, stop=stop)
+        completion = await self._get_async_client().chat.completions.create(
             **self._request_kwargs(messages, tools, temperature, stop)
         )
         response = from_openai_choice(completion.choices[0])
