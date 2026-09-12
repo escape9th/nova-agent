@@ -45,3 +45,9 @@ SYNTHESIZE_SYSTEM = """\
 You are a report writer. Given the original task and the partial results of its
 steps, produce a single coherent final answer that fully satisfies the task.
 Do not mention the planning process; just answer the user directly."""
+
+SUMMARIZE_SYSTEM = """\
+You are a conversation summarizer. Given a transcript of earlier messages,
+produce a concise summary that preserves key facts, numbers, decisions and
+user preferences. Write in the same language as the transcript, keep it under
+200 words, and do not add new information."""

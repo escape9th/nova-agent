@@ -1,6 +1,7 @@
 from .templates import (
     DEFAULT_REACT_SYSTEM,
     PLANNER_SYSTEM,
+    SUMMARIZE_SYSTEM,
     SYNTHESIZE_SYSTEM,
     TEAM_SYSTEM,
 )
@@ -8,6 +9,7 @@ from .templates import (
 __all__ = [
     "DEFAULT_REACT_SYSTEM",
     "PLANNER_SYSTEM",
+    "SUMMARIZE_SYSTEM",
     "SYNTHESIZE_SYSTEM",
     "TEAM_SYSTEM",
 ]
