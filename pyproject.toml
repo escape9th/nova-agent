@@ -39,6 +39,10 @@ dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
 ]
+server = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
 
 [project.scripts]
 nova = "nova.__main__:main"
