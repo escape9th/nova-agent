@@ -28,11 +28,12 @@ so you can read and understand every part.
 ## Features
 
 - **LLM abstraction** — a small provider interface plus an OpenAI-compatible
-  adapter and a deterministic mock for offline tests.
+  adapter, a local **Ollama** adapter, and a deterministic mock for offline tests.
 - **Tool system** — a `@tool` decorator that infers JSON Schema from type
-  hints, plus a registry and a set of safe builtin tools.
-- **Memory** — a sliding-window conversation buffer (short-term) and a
-  dependency-free vector store with feature-hashing embeddings (long-term RAG).
+  hints, plus a registry and builtin tools (calculator, file I/O, web search, ...).
+- **Memory** — a sliding-window conversation buffer (short-term), a
+  dependency-free vector store with feature-hashing embeddings (long-term RAG),
+  and LLM-based summarization for long conversations.
 - **ReAct agent** — the classic Reason + Act loop with tool calling and an
   iteration budget.
 - **Plan-and-execute** — structured planning (via forced tool output) followed
@@ -40,6 +41,7 @@ so you can read and understand every part.
 - **Multi-agent team** — a supervisor that delegates to specialists using the
   same tool-calling mechanism.
 - **Streaming** — token-level streaming and event-level agent traces.
+- **HTTP server** — expose the agent over REST with FastAPI (`nova.server`).
 - **CLI, examples and tests** — runnable demos and a hermetic test suite.
 
 ## Installation
@@ -116,6 +118,7 @@ walkthrough.
 | [examples/05_planner.py](examples/05_planner.py) | Plan-and-execute |
 | [examples/06_team.py](examples/06_team.py) | Multi-agent supervision |
 | [examples/07_streaming.py](examples/07_streaming.py) | Token streaming |
+| [examples/08_ollama.py](examples/08_ollama.py) | Local model via Ollama |
 
 ## Running tests
 

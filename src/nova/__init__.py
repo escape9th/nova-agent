@@ -8,7 +8,7 @@ framework. Every component is deliberately small and readable.
 
 from __future__ import annotations
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 try:  # load .env if present (and python-dotenv is installed)
     from dotenv import load_dotenv

@@ -4,6 +4,20 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-09-12
+
+### Added
+
+- `SummarizationMemory` — LLM-based compression of long conversations.
+- `web_search` tool backed by DuckDuckGo (no API key required).
+- `OllamaLLM` adapter for running local models offline.
+- FastAPI HTTP server (`nova.server`) exposing the agent over REST.
+- Chinese/English keywords in README and package metadata for discoverability.
+
+### Changed
+
+- Test suite expanded from 27 to 36 tests.
+
 ## [0.6.0] - 2026-09-11
 
 ### Added

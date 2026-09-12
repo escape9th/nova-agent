@@ -19,13 +19,14 @@ Nova 直接在 OpenAI 兼容协议之上，实现了现代 AI Agent 的核心机
 
 ## 特性
 
-- **LLM 抽象** —— 精简的 provider 接口 + OpenAI 兼容适配器 + 离线测试用的确定性 mock。
-- **工具系统** —— `@tool` 装饰器从类型注解自动推断 JSON Schema，外加注册表和一组安全的内置工具。
-- **记忆** —— 滑动窗口会话缓冲（短期）+ 零依赖的向量库（特征哈希嵌入，长期 RAG）。
+- **LLM 抽象** —— 精简的 provider 接口 + OpenAI 兼容适配器 + 本地 **Ollama** 适配器 + 离线测试用的确定性 mock。
+- **工具系统** —— `@tool` 装饰器从类型注解自动推断 JSON Schema，外加注册表和内置工具（计算器、文件读写、网页搜索等）。
+- **记忆** —— 滑动窗口会话缓冲（短期）+ 零依赖的向量库（特征哈希嵌入，长期 RAG）+ 长对话自动摘要压缩。
 - **ReAct agent** —— 经典的"推理 + 行动"循环，带工具调用与迭代上限。
 - **规划执行** —— 结构化规划（通过强制工具输出）+ 逐步执行 + 汇总。
 - **多 Agent 团队** —— supervisor 通过同一套工具调用机制把任务分派给专家。
 - **流式输出** —— token 级流式 + 事件级 agent 追踪。
+- **HTTP 服务** —— 用 FastAPI 把 agent 暴露成 REST 接口（`nova.server`）。
 - **CLI、示例与测试** —— 可运行的 demo，以及完全离线的测试套件。
 
 ## 安装
@@ -101,6 +102,7 @@ print(result.answer)
 | [examples/05_planner.py](examples/05_planner.py) | 规划执行 |
 | [examples/06_team.py](examples/06_team.py) | 多 Agent 监督协作 |
 | [examples/07_streaming.py](examples/07_streaming.py) | token 流式输出 |
+| [examples/08_ollama.py](examples/08_ollama.py) | Ollama 本地模型 |
 
 ## 运行测试
 
