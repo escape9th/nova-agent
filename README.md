@@ -1,3 +1,5 @@
+[English](README.md) · [简体中文](README_zh.md)
+
 # Nova
 
 A minimal, readable, **from-scratch AI agent framework**.
