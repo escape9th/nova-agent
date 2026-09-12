@@ -26,6 +26,8 @@ Nova 直接在 OpenAI 兼容协议之上，实现了现代 AI Agent 的核心机
 - **规划执行** —— 结构化规划（通过强制工具输出）+ 逐步执行 + 汇总。
 - **多 Agent 团队** —— supervisor 通过同一套工具调用机制把任务分派给专家。
 - **流式输出** —— token 级流式 + 事件级 agent 追踪。
+- **异步** —— `arun` / `achat` 支持并发、非阻塞的 agent 运行。
+- **结构化输出** —— JSON 模式（`response_format`），方便程序化解析。
 - **HTTP 服务** —— 用 FastAPI 把 agent 暴露成 REST 接口（`nova.server`）。
 - **CLI、示例与测试** —— 可运行的 demo，以及完全离线的测试套件。
 

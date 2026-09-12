@@ -41,6 +41,8 @@ so you can read and understand every part.
 - **Multi-agent team** — a supervisor that delegates to specialists using the
   same tool-calling mechanism.
 - **Streaming** — token-level streaming and event-level agent traces.
+- **Async** — `arun` / `achat` for concurrent, non-blocking agent runs.
+- **Structured output** — JSON mode (`response_format`) for parsing model output.
 - **HTTP server** — expose the agent over REST with FastAPI (`nova.server`).
 - **CLI, examples and tests** — runnable demos and a hermetic test suite.
 
