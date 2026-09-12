@@ -90,3 +90,52 @@ def fetch_url(url: str) -> str:
         response = client.get(url)
         response.raise_for_status()
     return _strip_html(response.text)[:4000]
+
+
+@tool(description="Search the web (DuckDuckGo) and return top results with title, URL and snippet.")
+def web_search(query: str, max_results: int = 5) -> str:
+    import httpx
+
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+        )
+    }
+    with httpx.Client(headers=headers, follow_redirects=True, timeout=15.0) as client:
+        response = client.get("https://html.duckduckgo.com/html/", params={"q": query})
+        response.raise_for_status()
+
+    results = _parse_duckduckgo(response.text, max_results)
+    if not results:
+        return "No results found."
+    return "\n".join(
+        f"{i}. {r['title']}\n   {r['url']}\n   {r['snippet']}"
+        for i, r in enumerate(results, start=1)
+    )
+
+
+def _parse_duckduckgo(html: str, max_results: int) -> list[dict]:
+    titles = re.findall(
+        r'<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>(.*?)</a>', html, re.S
+    )
+    snippets = re.findall(r'<a[^>]*class="result__snippet"[^>]*>(.*?)</a>', html, re.S)
+    results = []
+    for i, (href, title) in enumerate(titles[:max_results]):
+        results.append(
+            {
+                "title": _strip_html(title),
+                "url": _extract_duckduckgo_url(href),
+                "snippet": _strip_html(snippets[i]) if i < len(snippets) else "",
+            }
+        )
+    return results
+
+
+def _extract_duckduckgo_url(href: str) -> str:
+    from urllib.parse import unquote
+
+    match = re.search(r"uddg=([^&]+)", href)
+    if match:
+        return unquote(match.group(1))
+    return href

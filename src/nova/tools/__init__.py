@@ -5,6 +5,7 @@ from .builtin import (
     get_datetime,
     list_files,
     read_file,
+    web_search,
     write_file,
 )
 from .registry import ToolRegistry
@@ -18,5 +19,6 @@ __all__ = [
     "get_datetime",
     "list_files",
     "read_file",
+    "web_search",
     "write_file",
 ]
