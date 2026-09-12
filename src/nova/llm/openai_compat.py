@@ -90,6 +90,7 @@ class OpenAICompatLLM(BaseLLM):
         tools: Sequence[dict] | None,
         temperature: float,
         stop: Sequence[str] | None,
+        response_format: dict | None = None,
     ) -> dict[str, Any]:
         kwargs: dict[str, Any] = {
             "model": self.model,
@@ -101,6 +102,8 @@ class OpenAICompatLLM(BaseLLM):
             kwargs["tool_choice"] = "auto"
         if stop:
             kwargs["stop"] = list(stop)
+        if response_format:
+            kwargs["response_format"] = response_format
         return kwargs
 
     def chat(
@@ -109,9 +112,10 @@ class OpenAICompatLLM(BaseLLM):
         tools: Sequence[dict] | None = None,
         temperature: float = 0.0,
         stop: Sequence[str] | None = None,
+        response_format: dict | None = None,
     ) -> ChatResponse:
         completion = self.client.chat.completions.create(
-            **self._request_kwargs(messages, tools, temperature, stop)
+            **self._request_kwargs(messages, tools, temperature, stop, response_format)
         )
         response = from_openai_choice(completion.choices[0])
         if completion.usage is not None:
@@ -137,12 +141,19 @@ class OpenAICompatLLM(BaseLLM):
         tools: Sequence[dict] | None = None,
         temperature: float = 0.0,
         stop: Sequence[str] | None = None,
+        response_format: dict | None = None,
     ) -> ChatResponse:
         """Truly async completion via the AsyncOpenAI client."""
         if self._api_key is None:  # custom client without key — fall back to sync
-            return await super().achat(messages, tools=tools, temperature=temperature, stop=stop)
+            return await super().achat(
+                messages,
+                tools=tools,
+                temperature=temperature,
+                stop=stop,
+                response_format=response_format,
+            )
         completion = await self._get_async_client().chat.completions.create(
-            **self._request_kwargs(messages, tools, temperature, stop)
+            **self._request_kwargs(messages, tools, temperature, stop, response_format)
         )
         response = from_openai_choice(completion.choices[0])
         if completion.usage is not None:

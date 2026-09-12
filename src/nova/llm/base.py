@@ -80,6 +80,7 @@ class BaseLLM(ABC):
         tools: Sequence[dict] | None = None,
         temperature: float = 0.0,
         stop: Sequence[str] | None = None,
+        response_format: dict | None = None,
     ) -> ChatResponse:
         """Return a single completion for the given conversation history.
 
@@ -107,6 +108,7 @@ class BaseLLM(ABC):
         tools: Sequence[dict] | None = None,
         temperature: float = 0.0,
         stop: Sequence[str] | None = None,
+        response_format: dict | None = None,
     ) -> ChatResponse:
         """Async variant of :meth:`chat`.
 
@@ -116,8 +118,27 @@ class BaseLLM(ABC):
         import asyncio
 
         return await asyncio.to_thread(
-            self.chat, messages, tools=tools, temperature=temperature, stop=stop
+            self.chat,
+            messages,
+            tools=tools,
+            temperature=temperature,
+            stop=stop,
+            response_format=response_format,
         )
+
+    def json(self, messages: Sequence[Message], temperature: float = 0.0) -> dict:
+        """Ask the model for a JSON object and parse it into a dict.
+
+        Uses JSON mode (``response_format={"type": "json_object"}``). The caller
+        should make the prompt ask for JSON explicitly, as most providers require
+        that for JSON mode.
+        """
+        import json
+
+        response = self.chat(
+            messages, response_format={"type": "json_object"}, temperature=temperature
+        )
+        return json.loads(response.content or "{}")
 
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         """Return an embedding vector per input text.
