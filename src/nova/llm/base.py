@@ -101,6 +101,24 @@ class BaseLLM(ABC):
         """
         yield self.chat(messages, tools=tools, temperature=temperature)
 
+    async def achat(
+        self,
+        messages: Sequence[Message],
+        tools: Sequence[dict] | None = None,
+        temperature: float = 0.0,
+        stop: Sequence[str] | None = None,
+    ) -> ChatResponse:
+        """Async variant of :meth:`chat`.
+
+        The default runs the synchronous :meth:`chat` in a worker thread, so any
+        adapter works out of the box. Adapters may override it for true async I/O.
+        """
+        import asyncio
+
+        return await asyncio.to_thread(
+            self.chat, messages, tools=tools, temperature=temperature, stop=stop
+        )
+
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         """Return an embedding vector per input text.
 

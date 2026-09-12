@@ -121,3 +121,76 @@ class ReActAgent(BaseAgent):
             content=f"stopped after {self.max_iterations} iterations without a final answer",
             data={"iterations": self.max_iterations},
         )
+
+    async def arun(self, task: str) -> AgentResult:
+        """Async version of :meth:`run` — the same loop, but awaits the model.
+
+        Tool execution stays synchronous (tools are plain Python callables); the
+        async gain is in overlapping many concurrent agent runs and non-blocking
+        model I/O.
+        """
+        memory = self.memory if self.memory is not None else ConversationBufferMemory()
+
+        user_message = Message.user(task)
+        memory.add(user_message)
+
+        messages: list[Message] = [Message.system(self.system_prompt)]
+        messages.extend(memory.messages())
+
+        events: list[AgentEvent] = []
+        tool_calls = 0
+
+        for i in range(self.max_iterations):
+            response = await self.llm.achat(
+                messages,
+                tools=self.tools.specs() or None,
+                temperature=self.temperature,
+            )
+
+            if response.tool_calls:
+                assistant = Message.assistant(response.content, response.tool_calls)
+                messages.append(assistant)
+                memory.add(assistant)
+                events.append(
+                    AgentEvent(
+                        type="tool_call",
+                        content=response.content or "",
+                        data={
+                            "iterations": i + 1,
+                            "calls": [
+                                {"name": tc.name, "arguments": tc.arguments}
+                                for tc in response.tool_calls
+                            ],
+                        },
+                    )
+                )
+                for tc in response.tool_calls:
+                    result = self.tools.execute(tc.name, tc.arguments)
+                    tool_message = Message.tool(result, tc.id, tc.name)
+                    messages.append(tool_message)
+                    memory.add(tool_message)
+                    tool_calls += 1
+                    events.append(
+                        AgentEvent(
+                            type="tool_result",
+                            content=result,
+                            data={"iterations": i + 1, "name": tc.name, "id": tc.id},
+                        )
+                    )
+            else:
+                content = response.content or ""
+                memory.add(Message.assistant(content))
+                events.append(
+                    AgentEvent(type="answer", content=content, data={"iterations": i + 1})
+                )
+                return AgentResult(
+                    answer=content, events=events, iterations=i + 1, tool_calls=tool_calls
+                )
+
+        message = f"stopped after {self.max_iterations} iterations without a final answer"
+        events.append(
+            AgentEvent(type="error", content=message, data={"iterations": self.max_iterations})
+        )
+        return AgentResult(
+            answer=message, events=events, iterations=self.max_iterations, tool_calls=tool_calls
+        )

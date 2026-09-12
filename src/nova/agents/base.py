@@ -47,3 +47,13 @@ class BaseAgent(ABC):
         agents that can emit events incrementally should override this.
         """
         yield from self.run(task).events
+
+    async def arun(self, task: str) -> AgentResult:
+        """Async variant of :meth:`run`.
+
+        The default runs :meth:`run` in a worker thread; agents that can do true
+        async I/O should override it.
+        """
+        import asyncio
+
+        return await asyncio.to_thread(self.run, task)
